@@ -1,3 +1,3 @@
 /* tslint:disable */
-export function main(): void;
+export function run(): void;
 
