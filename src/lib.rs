@@ -8,7 +8,7 @@ pub fn main() -> Result<(), JsValue> {
 
     let val = document.create_element("p")?;
     val.set_inner_html("Hello from Rust :)");
-    body.append_child(&val);
+    body.append_child(&val)?;
 
     Ok(())
 }
