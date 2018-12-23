@@ -124,6 +124,60 @@ __exports.__widl_instanceof_HTMLFormElement = function(idx) {
     return getObject(idx) instanceof HTMLFormElement ? 1 : 0;
 };
 
+__exports.__widl_f_new_with_str_WebSocket = function(arg0, arg1, arg2, arg3, exnptr) {
+    let varg0 = getStringFromWasm(arg0, arg1);
+    let varg2 = getStringFromWasm(arg2, arg3);
+    try {
+        return addHeapObject(new WebSocket(varg0, varg2));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+};
+
+const __widl_f_send_with_str_WebSocket_target = typeof WebSocket === 'undefined' ? null : WebSocket.prototype.send || function() {
+    throw new Error(`wasm-bindgen: WebSocket.send does not exist`);
+};
+
+__exports.__widl_f_send_with_str_WebSocket = function(arg0, arg1, arg2, exnptr) {
+    let varg1 = getStringFromWasm(arg1, arg2);
+    try {
+        __widl_f_send_with_str_WebSocket_target.call(getObject(arg0), varg1);
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+};
+
+function GetOwnOrInheritedPropertyDescriptor(obj, id) {
+    while (obj) {
+        let desc = Object.getOwnPropertyDescriptor(obj, id);
+        if (desc) return desc;
+        obj = Object.getPrototypeOf(obj);
+    }
+return {}
+}
+
+const __widl_f_set_onopen_WebSocket_target = GetOwnOrInheritedPropertyDescriptor(typeof WebSocket === 'undefined' ? null : WebSocket.prototype, 'onopen').set || function() {
+    throw new Error(`wasm-bindgen: WebSocket.onopen does not exist`);
+};
+
+__exports.__widl_f_set_onopen_WebSocket = function(arg0, arg1) {
+    __widl_f_set_onopen_WebSocket_target.call(getObject(arg0), getObject(arg1));
+};
+
+const __widl_f_set_onmessage_WebSocket_target = GetOwnOrInheritedPropertyDescriptor(typeof WebSocket === 'undefined' ? null : WebSocket.prototype, 'onmessage').set || function() {
+    throw new Error(`wasm-bindgen: WebSocket.onmessage does not exist`);
+};
+
+__exports.__widl_f_set_onmessage_WebSocket = function(arg0, arg1) {
+    __widl_f_set_onmessage_WebSocket_target.call(getObject(arg0), getObject(arg1));
+};
+
 __exports.__widl_instanceof_Window = function(idx) {
     return getObject(idx) instanceof Window ? 1 : 0;
 };
@@ -157,6 +211,17 @@ __exports.__wbg_call_582b20dfcad7fee4 = function(arg0, arg1, exnptr) {
     }
 };
 
+__exports.__wbg_get_e5244e978dedcdd0 = function(arg0, arg1, exnptr) {
+    try {
+        return addHeapObject(Reflect.get(getObject(arg0), getObject(arg1)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+};
+
 __exports.__wbg_error_cc95a3d302735ca3 = function(arg0, arg1) {
     let varg0 = getStringFromWasm(arg0, arg1);
 
@@ -178,6 +243,59 @@ function dropObject(idx) {
 
 __exports.__wbindgen_object_drop_ref = function(i) { dropObject(i); };
 
+__exports.__wbindgen_string_new = function(p, l) {
+    return addHeapObject(getStringFromWasm(p, l));
+};
+
+__exports.__wbindgen_number_get = function(n, invalid) {
+    let obj = getObject(n);
+    if (typeof(obj) === 'number') return obj;
+    getUint8Memory()[invalid] = 1;
+    return 0;
+};
+
+__exports.__wbindgen_is_null = function(idx) {
+    return getObject(idx) === null ? 1 : 0;
+};
+
+__exports.__wbindgen_is_undefined = function(idx) {
+    return getObject(idx) === undefined ? 1 : 0;
+};
+
+__exports.__wbindgen_boolean_get = function(i) {
+    let v = getObject(i);
+    if (typeof(v) === 'boolean') {
+        return v ? 1 : 0;
+    } else {
+        return 2;
+    }
+};
+
+__exports.__wbindgen_is_symbol = function(i) {
+    return typeof(getObject(i)) === 'symbol' ? 1 : 0;
+};
+
+let cachedTextEncoder = new TextEncoder('utf-8');
+
+let WASM_VECTOR_LEN = 0;
+
+function passStringToWasm(arg) {
+
+    const buf = cachedTextEncoder.encode(arg);
+    const ptr = wasm.__wbindgen_malloc(buf.length);
+    getUint8Memory().set(buf, ptr);
+    WASM_VECTOR_LEN = buf.length;
+    return ptr;
+}
+
+__exports.__wbindgen_string_get = function(i, len_ptr) {
+    let obj = getObject(i);
+    if (typeof(obj) !== 'string') return 0;
+    const ptr = passStringToWasm(obj);
+    getUint32Memory()[len_ptr / 4] = WASM_VECTOR_LEN;
+    return ptr;
+};
+
 __exports.__wbindgen_cb_forget = dropObject;
 
 function takeObject(idx) {
@@ -188,13 +306,55 @@ function takeObject(idx) {
 
 __exports.__wbindgen_rethrow = function(idx) { throw takeObject(idx); };
 
-__exports.__wbindgen_closure_wrapper80 = function(a, b, _ignored) {
-    const f = wasm.__wbg_function_table.get(16);
-    const d = wasm.__wbg_function_table.get(17);
+__exports.__wbindgen_closure_wrapper118 = function(a, b, _ignored) {
+    const f = wasm.__wbg_function_table.get(32);
+    const d = wasm.__wbg_function_table.get(33);
     const cb = function(arg0) {
         this.cnt++;
         try {
             return f(this.a, b, addHeapObject(arg0));
+
+        } finally {
+            if (this.cnt-- == 1) d(this.a, b);
+
+        }
+
+    };
+    cb.a = a;
+    cb.cnt = 1;
+    let real = cb.bind(cb);
+    real.original = cb;
+    return addHeapObject(real);
+};
+
+__exports.__wbindgen_closure_wrapper120 = function(a, b, _ignored) {
+    const f = wasm.__wbg_function_table.get(30);
+    const d = wasm.__wbg_function_table.get(31);
+    const cb = function(arg0) {
+        this.cnt++;
+        try {
+            return f(this.a, b, addHeapObject(arg0));
+
+        } finally {
+            if (this.cnt-- == 1) d(this.a, b);
+
+        }
+
+    };
+    cb.a = a;
+    cb.cnt = 1;
+    let real = cb.bind(cb);
+    real.original = cb;
+    return addHeapObject(real);
+};
+
+__exports.__wbindgen_closure_wrapper122 = function(a, b, _ignored) {
+    const f = wasm.__wbg_function_table.get(28);
+    const d = wasm.__wbg_function_table.get(29);
+    const cb = function() {
+        this.cnt++;
+        try {
+            return f(this.a, b);
 
         } finally {
             if (this.cnt-- == 1) d(this.a, b);
