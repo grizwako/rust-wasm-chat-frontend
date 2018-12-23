@@ -1,34 +1,14 @@
-use js_sys::{Array, Date};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{Document, Element, HtmlElement, Window};
+use web_sys::{Document, Element, HtmlElement, Window, WebSocket, console, FormData, HtmlFormElement};
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
     let window = web_sys::window().expect("should have a window in this context");
     let document = window.document().expect("window should have a document");
 
-    // One of the first interesting things we can do with closures is simply
-    // access stack data in Rust!
-    let array = Array::new();
-    array.push(&"Hello".into());
-    array.push(&1.into());
-    let mut first_item = None;
-    array.for_each(&mut |obj, idx, _arr| match idx {
-        0 => {
-            assert_eq!(obj, "Hello");
-            first_item = obj.as_string();
-        }
-        1 => assert_eq!(obj, 1),
-        _ => panic!("unknown index: {}", idx),
-    });
-    assert_eq!(first_item, Some("Hello".to_string()));
 
-    // Below are some more advanced usages of the `Closure` type for closures
-    // that need to live beyond our function call.
-
-    setup_clock(&window, &document)?;
-    setup_clicker(&document);
+    setup_form_handling(&document);
 
     // And now that our demo is ready to go let's switch things up so
     // everything is displayed and our loading prompt is hidden.
@@ -50,58 +30,32 @@ pub fn run() -> Result<(), JsValue> {
     Ok(())
 }
 
-// Set up a clock on our page and update it each second to ensure it's got
-// an accurate date.
-//
-// Note the usage of `Closure` here because the closure is "long lived",
-// basically meaning it has to persist beyond the call to this one function.
-// Also of note here is the `.as_ref().unchecked_ref()` chain, which is who
-// you can extract `&Function`, what `web-sys` expects, from a `Closure`
-// which only hands you `&JsValue` via `AsRef`.
-fn setup_clock(window: &Window, document: &Document) -> Result<(), JsValue> {
-    let current_time = document
-        .get_element_by_id("current-time")
-        .expect("should have #current-time on the page");
-    update_time(&current_time);
-    let a = Closure::wrap(
-        Box::new(
-            move ||
-                update_time(&current_time)) as Box<dyn Fn()>
-        );
-
-    window.set_interval_with_callback_and_timeout_and_arguments_0(
-        a.as_ref().unchecked_ref(),
-        1000
-    )?;
-    
-    
-
-    fn update_time(current_time: &Element) {
-        current_time.set_inner_html(&String::from(
-            Date::new_0().to_locale_string("en-GB", &JsValue::undefined()),
-        ));
-    }
-
-    // The instances of `Closure` that we created will invalidate their
-    // corresponding JS callback whenever they're dropped, so if we were to
-    // normally return from `run` then both of our registered closures will
-    // raise exceptions when invoked.
-    //
-    // Normally we'd store these handles to later get dropped at an appropriate
-    // time but for now we want these to be global handlers so we use the
-    // `forget` method to drop them without invalidating the closure. Note that
-    // this is leaking memory in Rust, so this should be done judiciously!
-    a.forget();
-
-    Ok(())
-}
 
 // We also want to count the number of times that our green square has been
 // clicked. Our callback will update the `#num-clicks` div.
 //
 // This is pretty similar above, but showing how closures can also implement
 // `FnMut()`.
-fn setup_clicker(document: &Document) {
+fn setup_form_handling(document: &Document) {
+
+    let form = document.get_element_by_id("chat-controls").expect("#chat-controls not found.");
+    let username = document.get_element_by_id("username").expect("#username not found.");
+    let message = document.get_element_by_id("message").expect("#message not found.");
+    let f2 = form.dyn_ref::<HtmlFormElement>().expect("#chat-controls is not HtmlFormElement");
+    let data = FormData::new_with_form(f2);
+    let b = match data {
+        Ok(form_data) => form_data.get("message"),
+        Err(x) => x
+    };
+    console::log_1(&b);
+
+
+    let handler = Closure::wrap(Box::new(move || {
+        
+        console::log_1(&"adsfsadf".into());
+
+    }) as Box<dyn FnMut()>);
+
     let num_clicks = document
         .get_element_by_id("num-clicks")
         .expect("should have #num-clicks on the page");

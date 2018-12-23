@@ -20,4 +20,8 @@ features = [
   'HtmlElement',
   'Node',
   'Window',
+  'WebSocket',
+  'console',
+  'FormData',
+  'HtmlFormElement'
 ]
