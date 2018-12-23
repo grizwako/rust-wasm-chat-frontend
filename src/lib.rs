@@ -3,6 +3,17 @@ use wasm_bindgen::JsCast;
 use web_sys::{Document, Element, HtmlElement, Window, WebSocket, console, FormData, HtmlFormElement, EventListener, EventTarget, Event};
 use js_sys::Reflect;
 extern crate console_error_panic_hook;
+extern crate serde;
+extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
+
+#[derive(Serialize, Deserialize)]
+pub struct Message {
+    pub user: String,
+    pub text: String 
+}
+
 
 #[wasm_bindgen]
 pub fn init() {
@@ -31,11 +42,11 @@ fn setup_form_handling(document: &Document, ws: WebSocket) -> () {
             form.dyn_ref::<HtmlFormElement>().expect("#chat-controls is not HtmlFormElement")
         );
 
-        let b = match data {
-            Ok(form_data) => form_data.get("message"),
-            Err(x) => x
-        };
-        console::log_1(&b);
+        if let Some(msg) = message_from_form(data) {
+            ws.send_with_str(
+                &serde_json::to_string(&msg).expect("Serde could not serialize struct")
+            ).expect("Could not send message");
+        }
     });
     let cbx: Closure<Fn(Event)> = Closure::wrap(handler);
 
@@ -50,6 +61,18 @@ fn setup_form_handling(document: &Document, ws: WebSocket) -> () {
         ).expect("Could not add event listener");
 
     cbx.forget();
+
+    fn message_from_form(form_data: Result<FormData, JsValue>) -> Option<Message> {
+        match form_data {
+            Ok(form_data) => Some (
+                Message {
+                    user: form_data.get("username").as_string().expect("could not read username from form"),
+                    text: form_data.get("message").as_string().expect("could not read message from form")
+                }
+            ),
+            Err(_) => None
+        }
+    }
 }
 
 fn setup_ws_connection() -> WebSocket {
