@@ -4,6 +4,13 @@
     /**
     * @returns {void}
     */
+    __exports.init = function() {
+        return wasm.init();
+    };
+
+    /**
+    * @returns {void}
+    */
     __exports.run = function() {
         return wasm.run();
     };
@@ -30,18 +37,6 @@ function getStringFromWasm(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
 }
 
-const __widl_f_set_property_CSSStyleDeclaration_target = typeof CSSStyleDeclaration === 'undefined' ? null : CSSStyleDeclaration.prototype.setProperty || function() {
-    throw new Error(`wasm-bindgen: CSSStyleDeclaration.setProperty does not exist`);
-};
-
-let cachegetUint32Memory = null;
-function getUint32Memory() {
-    if (cachegetUint32Memory === null || cachegetUint32Memory.buffer !== wasm.memory.buffer) {
-        cachegetUint32Memory = new Uint32Array(wasm.memory.buffer);
-    }
-    return cachegetUint32Memory;
-}
-
 let heap_next = heap.length;
 
 function addHeapObject(obj) {
@@ -52,19 +47,6 @@ function addHeapObject(obj) {
     heap[idx] = obj;
     return idx;
 }
-
-__exports.__widl_f_set_property_CSSStyleDeclaration = function(arg0, arg1, arg2, arg3, arg4, exnptr) {
-    let varg1 = getStringFromWasm(arg1, arg2);
-    let varg3 = getStringFromWasm(arg3, arg4);
-    try {
-        __widl_f_set_property_CSSStyleDeclaration_target.call(getObject(arg0), varg1, varg3);
-    } catch (e) {
-        const view = getUint32Memory();
-        view[exnptr / 4] = 1;
-        view[exnptr / 4 + 1] = addHeapObject(e);
-
-    }
-};
 
 function isLikeNone(x) {
     return x === undefined || x === null;
@@ -82,22 +64,40 @@ __exports.__widl_f_get_element_by_id_Document = function(arg0, arg1, arg2) {
 
 };
 
-function GetOwnOrInheritedPropertyDescriptor(obj, id) {
-    while (obj) {
-        let desc = Object.getOwnPropertyDescriptor(obj, id);
-        if (desc) return desc;
-        obj = Object.getPrototypeOf(obj);
-    }
-return {}
-}
-
-const __widl_f_set_inner_html_Element_target = GetOwnOrInheritedPropertyDescriptor(typeof Element === 'undefined' ? null : Element.prototype, 'innerHTML').set || function() {
-    throw new Error(`wasm-bindgen: Element.innerHTML does not exist`);
+const __widl_f_prevent_default_Event_target = typeof Event === 'undefined' ? null : Event.prototype.preventDefault || function() {
+    throw new Error(`wasm-bindgen: Event.preventDefault does not exist`);
 };
 
-__exports.__widl_f_set_inner_html_Element = function(arg0, arg1, arg2) {
+__exports.__widl_f_prevent_default_Event = function(arg0) {
+    __widl_f_prevent_default_Event_target.call(getObject(arg0));
+};
+
+__exports.__widl_instanceof_EventTarget = function(idx) {
+    return getObject(idx) instanceof EventTarget ? 1 : 0;
+};
+
+const __widl_f_add_event_listener_with_callback_EventTarget_target = typeof EventTarget === 'undefined' ? null : EventTarget.prototype.addEventListener || function() {
+    throw new Error(`wasm-bindgen: EventTarget.addEventListener does not exist`);
+};
+
+let cachegetUint32Memory = null;
+function getUint32Memory() {
+    if (cachegetUint32Memory === null || cachegetUint32Memory.buffer !== wasm.memory.buffer) {
+        cachegetUint32Memory = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachegetUint32Memory;
+}
+
+__exports.__widl_f_add_event_listener_with_callback_EventTarget = function(arg0, arg1, arg2, arg3, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    __widl_f_set_inner_html_Element_target.call(getObject(arg0), varg1);
+    try {
+        __widl_f_add_event_listener_with_callback_EventTarget_target.call(getObject(arg0), varg1, getObject(arg3));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 };
 
 __exports.__widl_f_new_with_form_FormData = function(arg0, exnptr) {
@@ -118,26 +118,6 @@ const __widl_f_get_FormData_target = typeof FormData === 'undefined' ? null : Fo
 __exports.__widl_f_get_FormData = function(arg0, arg1, arg2) {
     let varg1 = getStringFromWasm(arg1, arg2);
     return addHeapObject(__widl_f_get_FormData_target.call(getObject(arg0), varg1));
-};
-
-__exports.__widl_instanceof_HTMLElement = function(idx) {
-    return getObject(idx) instanceof HTMLElement ? 1 : 0;
-};
-
-const __widl_f_style_HTMLElement_target = GetOwnOrInheritedPropertyDescriptor(typeof HTMLElement === 'undefined' ? null : HTMLElement.prototype, 'style').get || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.style does not exist`);
-};
-
-__exports.__widl_f_style_HTMLElement = function(arg0) {
-    return addHeapObject(__widl_f_style_HTMLElement_target.call(getObject(arg0)));
-};
-
-const __widl_f_set_onclick_HTMLElement_target = GetOwnOrInheritedPropertyDescriptor(typeof HTMLElement === 'undefined' ? null : HTMLElement.prototype, 'onclick').set || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.onclick does not exist`);
-};
-
-__exports.__widl_f_set_onclick_HTMLElement = function(arg0, arg1) {
-    __widl_f_set_onclick_HTMLElement_target.call(getObject(arg0), getObject(arg1));
 };
 
 __exports.__widl_instanceof_HTMLFormElement = function(idx) {
@@ -177,6 +157,15 @@ __exports.__wbg_call_582b20dfcad7fee4 = function(arg0, arg1, exnptr) {
     }
 };
 
+__exports.__wbg_error_cc95a3d302735ca3 = function(arg0, arg1) {
+    let varg0 = getStringFromWasm(arg0, arg1);
+
+    varg0 = varg0.slice();
+    wasm.__wbindgen_free(arg0, arg1 * 1);
+
+    console.error(varg0);
+};
+
 __exports.__wbindgen_object_clone_ref = function(idx) {
     return addHeapObject(getObject(idx));
 };
@@ -189,20 +178,6 @@ function dropObject(idx) {
 
 __exports.__wbindgen_object_drop_ref = function(i) { dropObject(i); };
 
-__exports.__wbindgen_string_new = function(p, l) {
-    return addHeapObject(getStringFromWasm(p, l));
-};
-
-__exports.__wbindgen_cb_drop = function(i) {
-    const obj = getObject(i).original;
-    dropObject(i);
-    if (obj.cnt-- == 1) {
-        obj.a = 0;
-        return 1;
-    }
-    return 0;
-};
-
 __exports.__wbindgen_cb_forget = dropObject;
 
 function takeObject(idx) {
@@ -213,18 +188,15 @@ function takeObject(idx) {
 
 __exports.__wbindgen_rethrow = function(idx) { throw takeObject(idx); };
 
-__exports.__wbindgen_closure_wrapper127 = function(a, b, _ignored) {
-    const f = wasm.__wbg_function_table.get(21);
-    const d = wasm.__wbg_function_table.get(22);
-    const cb = function() {
+__exports.__wbindgen_closure_wrapper80 = function(a, b, _ignored) {
+    const f = wasm.__wbg_function_table.get(16);
+    const d = wasm.__wbg_function_table.get(17);
+    const cb = function(arg0) {
         this.cnt++;
-        let a = this.a;
-        this.a = 0;
         try {
-            return f(a, b);
+            return f(this.a, b, addHeapObject(arg0));
 
         } finally {
-            this.a = a;
             if (this.cnt-- == 1) d(this.a, b);
 
         }
