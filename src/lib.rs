@@ -25,9 +25,11 @@ pub fn run() -> Result<(), JsValue> {
     init();
     let window = web_sys::window().expect("should have a window in this context");
     let document = window.document().expect("window should have a document");
-
+    let parent = document.get_element_by_id("chat-display")
+        .expect("No #chat-display");
     let ws = setup_ws_connection();
-    setup_ws_msg_recv(ws.clone());
+    let template = document.create_element("div")?;
+    setup_ws_msg_recv(ws.clone(), parent, template);
     setup_form_handling(&document, ws);
     Ok(())
 }
@@ -79,7 +81,6 @@ fn setup_ws_connection() -> WebSocket {
     let ws = WebSocket::new_with_str("ws://localhost:2794", "rust-websocket")
         .expect("WebSocket failed to connect 'ws://localhost:2794'");
 
-
     let ws_c = ws.clone();
     let open_handler = Box::new(move || {
         console::log_1(&"Connection opened, sending 'test' to server".into());
@@ -93,12 +94,19 @@ fn setup_ws_connection() -> WebSocket {
     ws
 }
 
-fn setup_ws_msg_recv(ws: WebSocket) -> () {
+fn setup_ws_msg_recv(ws: WebSocket, msgContainer : Element, templateNode: Element) -> () {
     let msg_recv_handler = Box::new(move |msg:JsValue| {
-        console::log_1(
-            &Reflect::get(&msg, &"data".into())
-            .expect("ws msg has no 'data'")
-        );
+        let data: JsValue = Reflect::get(&msg, &"data".into())
+            .expect("No 'data' field in websocket message!");
+
+        let message: Message = serde_json::from_str(
+                &data.as_string().expect("Field 'data' is not string")
+            ).expect("Serde could not decode Message");
+
+        let val = templateNode.clone_node().expect("Could not clone template node");
+        let text = format!("{} says: {}", message.user, message.text);
+        val.set_text_content(Some(&text));
+        msgContainer.append_child(&val).expect("Could not append message node to container");
     });
     let cb_mrh: Closure<Fn(JsValue)> = Closure::wrap(msg_recv_handler);
     ws.set_onmessage(
