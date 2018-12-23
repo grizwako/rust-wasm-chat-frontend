@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{Document, Element, HtmlElement, Window, WebSocket, console, FormData, HtmlFormElement, EventListener, EventTarget, Event};
+use web_sys::{Document, Element, WebSocket, console, FormData, HtmlFormElement, EventTarget, Event};
 use js_sys::Reflect;
 extern crate console_error_panic_hook;
 extern crate serde;
@@ -94,7 +94,7 @@ fn setup_ws_connection() -> WebSocket {
     ws
 }
 
-fn setup_ws_msg_recv(ws: WebSocket, msgContainer : Element, templateNode: Element) -> () {
+fn setup_ws_msg_recv(ws: WebSocket, msg_container : Element, template_node: Element) -> () {
     let msg_recv_handler = Box::new(move |msg:JsValue| {
         let data: JsValue = Reflect::get(&msg, &"data".into())
             .expect("No 'data' field in websocket message!");
@@ -103,10 +103,10 @@ fn setup_ws_msg_recv(ws: WebSocket, msgContainer : Element, templateNode: Elemen
                 &data.as_string().expect("Field 'data' is not string")
             ).expect("Serde could not decode Message");
 
-        let val = templateNode.clone_node().expect("Could not clone template node");
+        let val = template_node.clone_node().expect("Could not clone template node");
         let text = format!("{} says: {}", message.user, message.text);
         val.set_text_content(Some(&text));
-        msgContainer.append_child(&val).expect("Could not append message node to container");
+        msg_container.append_child(&val).expect("Could not append message node to container");
     });
     let cb_mrh: Closure<Fn(JsValue)> = Closure::wrap(msg_recv_handler);
     ws.set_onmessage(
